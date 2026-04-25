@@ -193,7 +193,7 @@ async function processBatch(messages) {
   // Messages are stored as unclassified, and classified in a background queue.
   queueBatchClassification();
 
-  return { ok: true, processed };
+  return { ok: true, count: processed };
 }
 
 // Background classification queue for batch-scraped messages.

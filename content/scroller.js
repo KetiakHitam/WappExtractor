@@ -9,6 +9,7 @@
   let scrollAborted = false;
   let scrollStats = {
     messagesFound: 0,
+    messagesSaved: 0,
     scrollCount: 0,
     startTime: null,
     batchesSent: 0,
@@ -91,6 +92,7 @@
     scrollAborted = false;
     scrollStats = {
       messagesFound: 0,
+      messagesSaved: 0,
       scrollCount: 0,
       startTime: Date.now(),
       batchesSent: 0,
@@ -125,19 +127,20 @@
         consecutiveNoLoad = 0;
       }
 
-      // Extract currently visible messages.
-      const response = await chrome.runtime.sendMessage({ type: 'TRIGGER_EXTRACT' });
-      if (response && response.count > 0) {
-        scrollStats.messagesFound += response.count;
-        messageBatch.push(...(response.messages || []));
+      // Extract currently visible messages directly.
+      const msgs = window.WappExtractor ? window.WappExtractor.extractAllVisibleMessages() : [];
+      if (msgs.length > 0) {
+        scrollStats.messagesFound += msgs.length;
+        messageBatch.push(...msgs);
       }
 
       // Send batch to background for storage when large enough.
       if (messageBatch.length >= SCROLL_CONFIG.batchSize) {
-        await chrome.runtime.sendMessage({
+        const resp = await chrome.runtime.sendMessage({
           type: 'BATCH_MESSAGES',
           messages: messageBatch,
         });
+        if (resp?.ok) scrollStats.messagesSaved += (resp.count || 0);
         scrollStats.batchesSent++;
         messageBatch = [];
       }
@@ -154,10 +157,11 @@
 
     // Send remaining messages.
     if (messageBatch.length > 0) {
-      await chrome.runtime.sendMessage({
+      const resp = await chrome.runtime.sendMessage({
         type: 'BATCH_MESSAGES',
         messages: messageBatch,
       });
+      if (resp?.ok) scrollStats.messagesSaved += (resp.count || 0);
       scrollStats.batchesSent++;
     }
 
@@ -203,17 +207,6 @@
           isScrolling,
           stats: { ...scrollStats },
         });
-        return true;
-
-      // Triggered by the scraper itself to extract visible messages.
-      // Forwarded to extractor.js logic.
-      case 'TRIGGER_EXTRACT':
-        if (typeof extractAllVisibleMessages === 'function') {
-          const msgs = extractAllVisibleMessages();
-          sendResponse({ messages: msgs, count: msgs.length });
-        } else {
-          sendResponse({ messages: [], count: 0 });
-        }
         return true;
 
       default:

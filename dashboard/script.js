@@ -214,6 +214,15 @@ async function updateTopStats() {
   } else {
     sugBadge.style.display = 'none';
   }
+
+  // Populate Group Filter dropdown
+  const groupSelect = document.getElementById('filterGroup');
+  const currentVal = groupSelect.value;
+  const groups = Object.keys(stats.byGroup || {}).sort();
+  
+  groupSelect.innerHTML = '<option value="">All Groups</option>' + 
+    groups.map(g => `<option value="${escapeHtml(g)}">${escapeHtml(g)}</option>`).join('');
+  groupSelect.value = currentVal;
 }
 
 // -- Modal --

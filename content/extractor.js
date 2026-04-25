@@ -287,6 +287,9 @@
     return messages;
   }
 
+  // Expose to window for scroller.js to call directly.
+  window.WappExtractor = { extractAllVisibleMessages };
+
   // -- Communication with Background --
 
   function sendMessage(message) {
@@ -306,11 +309,6 @@
           isTarget: isTargetGroup(currentGroupName),
           processedCount: processedMessageIds.size,
         });
-        return true;
-
-      case 'EXTRACT_VISIBLE':
-        const messages = extractAllVisibleMessages();
-        sendResponse({ messages, count: messages.length });
         return true;
 
       case 'UPDATE_TARGET_GROUPS':
