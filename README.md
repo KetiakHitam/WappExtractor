@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Gemini-Flash-a855f7?style=flat-square" alt="Gemini Flash">
   <img src="https://img.shields.io/badge/Storage-IndexedDB-c084fc?style=flat-square" alt="IndexedDB">
   <img src="https://img.shields.io/badge/Alerts-Discord_Webhooks-5865F2?style=flat-square" alt="Discord">
-  <img src="https://img.shields.io/badge/License-Private-gray?style=flat-square" alt="MIT">
+  <img src="https://img.shields.io/badge/License-MIT-gray?style=flat-square" alt="MIT">
 </p>
 
 ---
