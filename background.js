@@ -215,6 +215,14 @@ async function queueBatchClassification() {
 
       await db.updateClassification(msg.id, result);
 
+      if (result.suggestedKeywords && result.suggestedKeywords.length > 0) {
+        const suggestionsWithContext = result.suggestedKeywords.map(s => ({
+          ...s,
+          context: msg.text
+        }));
+        await db.addSuggestions(suggestionsWithContext);
+      }
+
       if (shouldAlert(result) && config.discordWebhookUrl) {
         await sendDiscordAlert(config.discordWebhookUrl, msg, result);
       }
