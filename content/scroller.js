@@ -20,8 +20,8 @@
     maxDelay: 2800,
     scrollAmount: 600,
     batchSize: 30,
-    maxRetries: 5,
-    loadTimeout: 5000,
+    maxRetries: 10,
+    loadTimeout: 8000,
   };
 
   // Random delay within range for human-like behavior.
@@ -105,12 +105,7 @@
     let messageBatch = [];
 
     while (!scrollAborted) {
-      // Check if we reached the top.
-      if (hasReachedTop()) {
-        console.log('[WappExtractor] Reached top of chat history.');
-        break;
-      }
-
+      const isAtTop = hasReachedTop();
       const previousHeight = container.scrollHeight;
       scrollUp(container);
       scrollStats.scrollCount++;
@@ -119,8 +114,12 @@
 
       if (!loaded) {
         consecutiveNoLoad++;
-        if (consecutiveNoLoad >= 3) {
-          console.log('[WappExtractor] No new content after 3 attempts. Likely at top.');
+        if (isAtTop && consecutiveNoLoad >= 5) {
+          console.log('[WappExtractor] Reached top of history (Encryption bubble found).');
+          break;
+        }
+        if (consecutiveNoLoad >= 15) {
+          console.log('[WappExtractor] No new content after 15 attempts. Stopping.');
           break;
         }
       } else {

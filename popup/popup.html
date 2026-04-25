@@ -38,13 +38,13 @@
       <button class="popup-btn ghost" id="btnOpenDashboard">Open Dashboard</button>
     </div>
 
-    <div class="scrape-progress" id="scrapeProgress" style="display:none">
-      <div class="progress-header">
-        <span>Scraping...</span>
-        <span id="scrapeCount">0 messages</span>
+    <div id="scrapeProgress" class="scrape-progress" style="display:none">
+      <div class="progress-info">
+        <span id="scrapeStatus">Scraping history...</span>
+        <span id="scrapeCount">0 Found | 0 Saved</span>
       </div>
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill"></div>
+      <div class="progress-track">
+        <div id="progressFill" class="progress-fill" style="width:0%"></div>
       </div>
       <button class="popup-btn ghost small" id="btnStopScrape">Stop Scrape</button>
     </div>

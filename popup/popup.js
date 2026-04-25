@@ -116,7 +116,9 @@ function updateScrapeProgress(msg) {
   }
 
   progress.style.display = '';
-  count.textContent = `${msg.stats?.messagesFound || 0} messages`;
+  const found = msg.stats?.messagesFound || 0;
+  const saved = msg.stats?.messagesSaved || 0;
+  count.textContent = `${found} Found | ${saved} Saved`;
 
   // Indeterminate progress (we don't know total).
   const scrollCount = msg.stats?.scrollCount || 0;
