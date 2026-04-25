@@ -202,9 +202,10 @@ function initModal() {
 }
 
 window.openMessageModal = async function (id) {
-  selectedMessageId = id;
+  const numericId = Number(id);
+  selectedMessageId = numericId;
   const msg = await sendMsg({ type: 'GET_MESSAGES', filters: {} });
-  const message = msg?.messages?.find(m => m.id === id);
+  const message = msg?.messages?.find(m => m.id === numericId);
   if (!message) return;
 
   const body = document.getElementById('modalBody');
