@@ -76,6 +76,8 @@ export function scoreMessage(text, config) {
     const terms = data.terms || [];
     const categoryHits = [];
 
+    const lowerCategory = category.toLowerCase();
+
     for (const term of terms) {
       const lowerTerm = term.toLowerCase();
       if (lowerText.includes(lowerTerm)) {
@@ -86,7 +88,7 @@ export function scoreMessage(text, config) {
 
     if (categoryHits.length > 0) {
       const categoryScore = categoryHits.length * multiplier;
-      categories[category] = {
+      categories[lowerCategory] = {
         hits: categoryHits,
         score: categoryScore,
       };
