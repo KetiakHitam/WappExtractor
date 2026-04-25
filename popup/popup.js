@@ -53,8 +53,9 @@ async function refreshStatus() {
       document.getElementById('scrapeProgress').style.display = '';
       document.getElementById('scrapeCount').textContent = `${scrapeStatus.stats.messagesFound} messages`;
     }
-  } catch {
+  } catch (err) {
     // Content script not ready or tab closed.
+    setStatus('Reload WhatsApp Tab', 'error');
   }
 }
 

@@ -257,7 +257,7 @@ async function testWebhook(url) {
 async function testGemini(apiKey) {
   try {
     const resp = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -271,9 +271,15 @@ async function testGemini(apiKey) {
       }
     );
     const data = await resp.json();
+
+    if (!resp.ok) {
+      const errMsg = data?.error?.message || `HTTP ${resp.status}`;
+      return { ok: false, error: errMsg };
+    }
+
     const text =
       data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    return { ok: resp.ok, response: text.trim() };
+    return { ok: true, response: text.trim() };
   } catch (err) {
     return { ok: false, error: err.message };
   }

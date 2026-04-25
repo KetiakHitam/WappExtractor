@@ -14,13 +14,13 @@ const WA_SELECTORS = {
   fallbackMessageList: '#main div.copyable-area div[tabindex="0"]',
 
   // Individual messages
-  messageRow: 'div[role="row"]',
+  messageRow: 'div[data-id]',
   messageIn: 'div.message-in',
   messageOut: 'div.message-out',
   messageContainer: 'div[data-testid="msg-container"]',
 
   // Message content
-  messageText: 'span.selectable-text',
+  messageText: 'span[data-testid="selectable-text"]',
   messageTextInner: 'span[dir]',
   quotedMessage: 'div[data-testid="quoted-message"]',
 
@@ -30,8 +30,8 @@ const WA_SELECTORS = {
   pushName: 'span[data-testid="author"]',
 
   // Timestamp
-  timestamp: 'span[data-testid="msg-time"]',
-  fallbackTimestamp: 'div[data-testid="msg-meta"] span',
+  timestamp: 'div[data-testid="msg-meta"] span',
+  fallbackTimestamp: 'span[data-testid="msg-time"]',
 
   // Media
   imageThumb: 'img[src*="blob:"]',

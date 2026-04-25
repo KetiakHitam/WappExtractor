@@ -137,6 +137,10 @@ body {
   text-align: center;
 }
 
+.popup-btn:active {
+  transform: scale(0.96);
+}
+
 .popup-btn.primary {
   background: #7c3aed;
   color: white;

@@ -85,26 +85,24 @@
     );
   }
 
-  // Watch for chat switches by observing header changes.
+  // Watch for chat switches. Polling is used because WhatsApp's React DOM
+  // frequently destroys and recreates the entire header tree when switching chats.
   function observeChatSwitch() {
-    const mainPanel = document.querySelector(WA_SELECTORS.chatPanel);
-    if (!mainPanel) {
-      setTimeout(observeChatSwitch, 2000);
-      return;
-    }
-
-    const headerObserver = new MutationObserver(() => {
-      detectCurrentGroup(mainPanel);
-    });
-
-    const header = mainPanel.querySelector(WA_SELECTORS.chatHeader);
-    if (header) {
-      headerObserver.observe(header, {
-        childList: true,
-        subtree: true,
-        characterData: true,
-      });
-    }
+    setInterval(() => {
+      const mainPanel = document.querySelector(WA_SELECTORS.chatPanel);
+      if (mainPanel) {
+        detectCurrentGroup(mainPanel);
+      } else if (currentGroupName !== null) {
+        // Chat closed/deselected.
+        currentGroupName = null;
+        stopMonitoring();
+        chrome.runtime.sendMessage({
+          type: 'GROUP_CHANGED',
+          groupName: null,
+          isTarget: false,
+        });
+      }
+    }, 1000);
   }
 
   // -- Message Monitoring --
@@ -113,9 +111,11 @@
     if (isMonitoring) return;
     isMonitoring = true;
 
-    const messageContainer = getMessageContainer();
+    // Observe the entire main panel instead of trying to find the 
+    // inner message list, which changes classes constantly in WhatsApp Web.
+    const messageContainer = document.querySelector(WA_SELECTORS.chatPanel);
     if (!messageContainer) {
-      console.warn('[WappExtractor] Message container not found.');
+      console.warn('[WappExtractor] Chat panel not found.');
       isMonitoring = false;
       return;
     }
@@ -150,11 +150,7 @@
   }
 
   function getMessageContainer() {
-    return (
-      document.querySelector(WA_SELECTORS.messageListScroller) ||
-      document.querySelector(WA_SELECTORS.messageList) ||
-      document.querySelector(WA_SELECTORS.fallbackMessageList)
-    );
+    return document.querySelector(WA_SELECTORS.chatPanel);
   }
 
   // -- Message Extraction --

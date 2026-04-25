@@ -1,7 +1,7 @@
 // Layer 3: Gemini API integration for intelligent message classification.
 
 const GEMINI_ENDPOINT =
-  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+  'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent';
 
 const RATE_LIMIT = {
   maxPerMinute: 14,
