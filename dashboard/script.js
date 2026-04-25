@@ -156,10 +156,18 @@ function renderMessages(messages) {
         <td class="msg-group">${escapeHtml(msg.groupName)}</td>
         <td><span class="category-badge ${category}">${label}</span></td>
         <td><div class="relevance-dots">${dots}</div></td>
-        <td><button class="btn btn-ghost" onclick="openMessageModal(${msg.id})">View</button></td>
+        <td><button class="btn btn-ghost btn-view-msg" data-id="${msg.id}">View</button></td>
       </tr>
     `;
   }).join('');
+
+  // Attach event listeners for View buttons (CSP fix)
+  tbody.querySelectorAll('.btn-view-msg').forEach(btn => {
+    btn.addEventListener('click', e => {
+      const id = e.target.dataset.id;
+      if (id) openMessageModal(id);
+    });
+  });
 }
 
 async function updateTopStats() {
