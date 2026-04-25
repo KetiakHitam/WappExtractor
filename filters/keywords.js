@@ -1,11 +1,7 @@
 // Layer 1: Keyword matching engine.
 // Scores messages based on keyword hits across multiple categories.
 
-let keywordConfig = null;
-
 export async function loadKeywords() {
-  if (keywordConfig) return keywordConfig;
-
   try {
     // Load from Chrome storage first (user may have customized).
     const stored = await new Promise(resolve => {
@@ -15,8 +11,7 @@ export async function loadKeywords() {
     });
 
     if (stored) {
-      keywordConfig = stored;
-      return keywordConfig;
+      return stored;
     }
 
     // Fall back to bundled config.
@@ -32,7 +27,6 @@ export async function loadKeywords() {
 
 // Save updated keywords (from dashboard edits).
 export async function saveKeywords(config) {
-  keywordConfig = config;
   return new Promise((resolve, reject) => {
     chrome.storage.local.set({ keywords: config }, () => {
       if (chrome.runtime.lastError) {
