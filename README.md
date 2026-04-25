@@ -22,7 +22,7 @@
 
 WappExtractor is a Manifest V3 Chrome Extension built for monitoring WhatsApp Web group chats in real time. It extracts messages from the DOM, runs them through a multi-layered classification pipeline (keywords, URL analysis, and Google Gemini LLM), stores everything locally in IndexedDB, and pushes high-priority matches to Discord via webhooks.
 
-Originally built for tracking **Umamusume (Uma Musume Pretty Derby)** anime merchandise deals across Malaysian buy/sell/trade groups, it is fully configurable for any niche.
+Originally built for tracking uma merch and deals across Malaysian buy/sell/trade groups, it is fully configurable for any niche.
 
 ---
 
