@@ -298,7 +298,7 @@ async function loadKeywords() {
     .map(([category, data]) => {
       const terms = data.terms || [];
       const tags = terms
-        .map(t => `<span class="keyword-tag" data-category="${category}" data-term="${escapeHtml(t)}">${escapeHtml(t)}<span class="remove-tag" onclick="removeKeyword('${category}', '${escapeHtml(t)}')">&times;</span></span>`)
+        .map(t => `<span class="keyword-tag" data-category="${category}" data-term="${escapeHtml(t)}">${escapeHtml(t)}<span class="remove-tag" data-cat="${category}" data-term="${escapeHtml(t)}">&times;</span></span>`)
         .join('');
 
       return `
@@ -309,12 +309,34 @@ async function loadKeywords() {
           </div>
           <div class="keyword-tags">${tags}</div>
           <div class="keyword-add">
-            <input type="text" placeholder="Add keyword..." id="addKeyword-${category}" onkeydown="if(event.key==='Enter')addKeyword('${category}')">
-            <button class="btn btn-secondary" onclick="addKeyword('${category}')">Add</button>
+            <input type="text" placeholder="Add keyword..." id="addKeyword-${category}">
+            <button class="btn btn-secondary btn-add-keyword" data-cat="${category}">Add</button>
           </div>
         </div>
       `;
     }).join('');
+
+  // Attach event listeners (Chrome CSP forbids inline onclick attributes)
+  grid.querySelectorAll('.remove-tag').forEach(btn => {
+    btn.addEventListener('click', e => {
+      removeKeyword(e.target.dataset.cat, e.target.dataset.term);
+    });
+  });
+
+  grid.querySelectorAll('.btn-add-keyword').forEach(btn => {
+    btn.addEventListener('click', e => {
+      addKeyword(e.target.dataset.cat);
+    });
+  });
+
+  grid.querySelectorAll('input[id^="addKeyword-"]').forEach(input => {
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const cat = input.id.replace('addKeyword-', '');
+        addKeyword(cat);
+      }
+    });
+  });
 }
 
 window.addKeyword = async function (category) {
