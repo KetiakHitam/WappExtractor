@@ -1,14 +1,6 @@
 // Dashboard logic: navigation, message display, keyword management,
 // settings, stats, and modal interactions.
 
-window.dumpConfig = async function() {
-  const config = await getKeywordConfig();
-  console.log('====== KEYWORD CONFIG DUMP ======');
-  console.log(JSON.stringify(config, null, 2));
-  console.log('=================================');
-  alert('Dumped to console. Check DevTools (F12).');
-};
-
 // -- State --
 let currentSection = 'messages';
 let currentPage = 0;
@@ -37,6 +29,17 @@ document.addEventListener('DOMContentLoaded', () => {
   loadSettings();
   loadKeywords();
 
+  // Listen for real-time status updates from background.
+  chrome.runtime.onMessage.addListener((request) => {
+    if (request.type === 'STATUS_UPDATE') {
+      updateStatusUI(request.status);
+      if (request.status === 'Idle') {
+        loadMessages();
+        loadStats();
+      }
+    }
+  });
+ 
   // Refresh data periodically.
   setInterval(() => {
     if (currentSection === 'messages') loadMessages();
@@ -358,17 +361,21 @@ async function loadKeywords() {
 
 window.addKeyword = async function (category) {
   const input = document.getElementById(`addKeyword-${category}`);
-  const term = input.value.trim();
+  const term = input.value.trim().toLowerCase();
   if (!term) return;
 
   const config = await getKeywordConfig();
   if (!config[category]) config[category] = { confidence: 'medium', terms: [] };
-  if (!config[category].terms.includes(term)) {
+  
+  if (!config[category].terms.map(t => t.toLowerCase()).includes(term)) {
     config[category].terms.push(term);
     await saveKeywordConfig(config);
     input.value = '';
     loadKeywords();
     showToast(`Added "${term}" to ${category}.`, 'success');
+  } else {
+    input.value = '';
+    showToast(`"${term}" is already in ${category}.`, 'info');
   }
 };
 
@@ -473,6 +480,23 @@ async function exportData() {
 }
 
 // -- Stats --
+
+function updateStatusUI(status) {
+  const dot = document.querySelector('#statusIndicator .status-dot');
+  const text = document.querySelector('#statusIndicator .status-text');
+  if (!dot || !text) return;
+
+  text.textContent = status;
+  dot.className = 'status-dot'; // Reset
+
+  if (status.includes('Classifying')) {
+    dot.classList.add('scraping');
+  } else if (status === 'Idle') {
+    dot.classList.add('idle');
+  } else {
+    dot.classList.add('monitoring');
+  }
+}
 
 async function loadStats() {
   const stats = await sendMsg({ type: 'GET_STATS' });
