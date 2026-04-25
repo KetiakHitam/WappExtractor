@@ -29,12 +29,14 @@ Originally built for tracking **Umamusume (Uma Musume Pretty Derby)** anime merc
 ## Features
 
 ### Real-Time Message Extraction
+
 - Injects a content script into WhatsApp Web and monitors target groups via `MutationObserver`.
 - Automatically detects chat switches and starts/stops monitoring based on your configured target group list.
 - Extracts sender name, timestamp, message text, embedded links, and image URLs from the DOM.
 - Generates a content-hash ID per message to prevent duplicates across sessions.
 
 ### Historical Scraping
+
 - Scrolls up through chat history to lazy-load and capture older messages.
 - Randomized scroll delays (1.2s - 2.8s) with occasional longer pauses to mimic human behavior.
 - Detects end-of-history via WhatsApp's encryption intro bubble.
@@ -46,6 +48,7 @@ Originally built for tracking **Umamusume (Uma Musume Pretty Derby)** anime merc
 The pipeline processes every message through up to three layers, with each layer adding more intelligence:
 
 #### Layer 1: Keyword Matching (`filters/keywords.js`)
+
 - Case-insensitive matching against a configurable keyword database organized by category.
 - Categories: `umamusume`, `merch`, `stores`, `locations`, `announcements`, `exclude`.
 - Each category has a confidence level (`high`, `medium`, `low`).
@@ -54,12 +57,14 @@ The pipeline processes every message through up to three layers, with each layer
 - Keywords are editable live from the dashboard and take effect immediately (no extension reload required).
 
 #### Layer 2: URL Detection & Categorization (`filters/url_parser.js`)
+
 - Regex extraction of all URLs from message text, merged with DOM-extracted links.
 - Domain-based categorization into: `marketplace` (Shopee, Lazada, Carousell), `jp_store` (AmiAmi, Mandarake, Suruga-ya), `proxy` (Buyee, ZenMarket), `manufacturer` (Good Smile, Kotobukiya), `location` (Google Maps, Waze), `auction` (Yahoo Auctions), `social`, and `image`.
 - Convenience arrays for quick access to store links, location links, and marketplace links.
 - Scoring contribution: store links (+4), marketplace links (+3), location links (+5), unknown links (+1).
 
 #### Layer 3: Gemini LLM Classification (`filters/llm_classifier.js`)
+
 - Calls Google Gemini (Flash) via REST API for intelligent classification.
 - Prompt is tuned for Malay-English mixed text with heavy abbreviations (e.g., "blh" = "boleh", "dpt" = "dapat", "kdai" = "kedai").
 - Returns structured JSON: `category`, `relevance` (1-5), `summary`, `reasoning`, and `suggestedKeywords`.
@@ -68,6 +73,7 @@ The pipeline processes every message through up to three layers, with each layer
 - Temperature set to 0.1 for deterministic, consistent classifications.
 
 #### Pipeline Orchestration (`filters/pipeline.js`)
+
 The `FilterPipeline` class ties all three layers together with a strict override hierarchy:
 
 1. If a keyword hits the `umamusume` category, force `UMAMUSUME_MERCH` with relevance 4+.
@@ -79,6 +85,7 @@ The `FilterPipeline` class ties all three layers together with a strict override
 This hierarchy ensures that keyword matches always override LLM hallucinations, providing deterministic results for known terms while still leveraging AI for unknown content.
 
 ### AI Suggestion Engine (Active Learning)
+
 - Gemini proactively identifies shorthands, abbreviations, or terms in messages that it believes should be added to the keyword database.
 - Suggestions are stored in a dedicated `suggestions` table in IndexedDB with fields: `term`, `category`, `confidence` (1-100), `reason`, `context` (the original message snippet), and `status` (pending/approved/dismissed).
 - The dashboard displays pending suggestions as cards with confidence meters, reasoning, and original context.
@@ -86,6 +93,7 @@ This hierarchy ensures that keyword matches always override LLM hallucinations, 
 - Works during both live monitoring and historical batch processing.
 
 ### Discord Webhook Alerts
+
 - Formats classified messages as rich Discord embeds, color-coded by category:
   - Purple (`#7c3aed`) for Umamusume Merch
   - Amber (`#f59e0b`) for Figure Sales
@@ -97,26 +105,31 @@ This hierarchy ensures that keyword matches always override LLM hallucinations, 
 - Alerts trigger when a message's category is in the alert list AND relevance >= 3.
 
 ### Dashboard
+
 A full-featured analytics interface built with a Supabase-inspired dark purple theme.
 
 **Messages View:**
+
 - Paginated table of all scraped messages with search and filters (group, category, relevance).
 - Click any row to open a detail modal showing: sender, group, timestamp, full message, links, category badge, relevance dots, AI summary, reasoning, and keyword hits.
 - Manual category override per message via dropdown.
 
 **Keywords View:**
+
 - Visual editor for all keyword categories.
 - Add/remove keywords per category with automatic lowercase normalization.
 - Duplicate detection: rejects entries that already exist (case-insensitive).
 - Changes persist to `chrome.storage.local` and take effect immediately.
 
 **Suggestions View:**
+
 - Displays AI-discovered keyword suggestions as cards in a responsive grid.
 - Each card shows: the suggested term, target category, confidence percentage bar, reasoning, and the original message context.
 - Approve or dismiss with one click. Approved terms are instantly added to the keyword configuration.
 - Badge counter on the sidebar nav item shows the number of pending suggestions.
 
 **Settings View:**
+
 - Target group names (comma-separated list of WhatsApp group names to monitor).
 - Discord webhook URL with a "Test Webhook" button.
 - Gemini API key with a "Test Gemini" button.
@@ -125,15 +138,19 @@ A full-featured analytics interface built with a Supabase-inspired dark purple t
 - Export all data as JSON.
 
 **Stats View:**
+
 - Overview cards: total messages, classified messages, match count.
 - Breakdown bar charts by category and by group.
 
 **Status Indicator:**
+
 - Real-time status in the sidebar footer: `Idle`, `Classifying...` (with pulsing animation), or `Monitoring`.
 - Updates automatically as the background service worker processes messages.
 
 ### Extension Popup
+
 A compact control panel accessible by clicking the extension icon:
+
 - Current status badge (Idle / Monitoring / Scraping / Error).
 - Active group name display.
 - Processed message count.
@@ -210,6 +227,7 @@ WhatsApp Web DOM
 ## Installation
 
 ### Prerequisites
+
 - Google Chrome (or any Chromium-based browser)
 - A Google Gemini API key ([Get one here](https://aistudio.google.com/app/apikey)) -- free tier is sufficient
 - A Discord webhook URL (optional, for alerts)
@@ -217,6 +235,7 @@ WhatsApp Web DOM
 ### Steps
 
 1. **Clone the repository:**
+
    ```bash
    git clone https://github.com/KetiakHitam/WappExtractor.git
    ```
@@ -247,12 +266,15 @@ WhatsApp Web DOM
 ## Configuration
 
 ### Target Groups
+
 Group names are matched case-insensitively using partial matching. If your group is called "Anime Figures MY Trading", entering `anime figures` will match it.
 
 ### Keywords
+
 The default `config/keywords.json` ships with an extensive list of Umamusume character names, merchandise terms, Malaysian store names, and location identifiers. All keywords can be modified live from the dashboard without restarting the extension.
 
 ### Filter Sensitivity
+
 - **Aggressive**: Sends more messages to Gemini for classification (higher API usage, fewer false negatives)
 - **Balanced**: Default. Only sends "candidate" messages (keyword or URL hits) to Gemini.
 - **Conservative**: Only classifies messages with strong keyword matches.
@@ -261,16 +283,16 @@ The default `config/keywords.json` ships with an extensive list of Umamusume cha
 
 ## Tech Stack
 
-| Component | Technology | Purpose |
-|-----------|-----------|---------|
-| Extension Framework | Chrome Extension Manifest V3 | Service workers, content script isolation, modern Chrome APIs |
-| Language | Vanilla JavaScript (ES Modules) | Zero build tools, native Chrome extension support |
-| Local Storage | IndexedDB | High-capacity local message storage (handles 100K+ messages) |
-| Config Storage | Chrome Storage Sync API | Small config data synced across Chrome instances |
-| LLM | Google Gemini API (Flash) | Intelligent message classification with Malay/English support |
-| Notifications | Discord Webhooks | Instant alerts via rich embeds |
-| UI Framework | Vanilla CSS + HTML | Custom dark theme, no external CSS dependencies |
-| Typography | Inter (Google Fonts) | Clean, modern readability |
+| Component           | Technology                      | Purpose                                                       |
+| ------------------- | ------------------------------- | ------------------------------------------------------------- |
+| Extension Framework | Chrome Extension Manifest V3    | Service workers, content script isolation, modern Chrome APIs |
+| Language            | Vanilla JavaScript (ES Modules) | Zero build tools, native Chrome extension support             |
+| Local Storage       | IndexedDB                       | High-capacity local message storage (handles 100K+ messages)  |
+| Config Storage      | Chrome Storage Sync API         | Small config data synced across Chrome instances              |
+| LLM                 | Google Gemini API (Flash)       | Intelligent message classification with Malay/English support |
+| Notifications       | Discord Webhooks                | Instant alerts via rich embeds                                |
+| UI Framework        | Vanilla CSS + HTML              | Custom dark theme, no external CSS dependencies               |
+| Typography          | Inter (Google Fonts)            | Clean, modern readability                                     |
 
 ---
 
@@ -297,14 +319,17 @@ WappExtractor is designed to be invisible to WhatsApp's detection systems:
 ## Development
 
 ### File Naming Convention
+
 - All filenames are lowercase, descriptive, and short.
 - No build tools, transpilers, or bundlers required.
 - Load the extension directly from the source folder.
 
 ### Updating WhatsApp Selectors
+
 When WhatsApp updates their DOM structure, only `content/selectors.js` needs to be modified. All CSS selectors are centralized in the `WA_SELECTORS` object with primary and fallback selectors for resilience.
 
 ### Adding New Categories
+
 1. Add the category to `config/keywords.json` with terms and confidence level.
 2. Add the category constant and label to `discord/webhook.js`, `dashboard/script.js`, and `filters/pipeline.js`.
 3. Update the pipeline hierarchy in `pipeline.js` if the new category should override LLM classifications.
@@ -317,9 +342,3 @@ When WhatsApp updates their DOM structure, only `content/selectors.js` needs to 
 - **WhatsApp DOM changes.** WhatsApp Web frequently updates its internal DOM structure. When this happens, `content/selectors.js` may need updating.
 - **Gemini free tier rate limits.** The free tier is limited to 15 RPM. Batch processing of large chat histories can take significant time.
 - **No image/media analysis.** Only text content and URLs are extracted and classified. Image-based posts (e.g., figure photos with no caption) will be missed.
-
----
-
-## License
-
-This project is private and not licensed for redistribution.
