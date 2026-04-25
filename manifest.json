@@ -1,0 +1,57 @@
+{
+  "manifest_version": 3,
+  "name": "WappExtractor",
+  "version": "1.0.0",
+  "description": "WhatsApp Web message extractor and classifier for anime merchandise hunting.",
+
+  "permissions": [
+    "storage",
+    "activeTab",
+    "tabs"
+  ],
+
+  "host_permissions": [
+    "https://web.whatsapp.com/*",
+    "https://generativelanguage.googleapis.com/*",
+    "https://discord.com/api/*"
+  ],
+
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["https://web.whatsapp.com/*"],
+      "js": [
+        "content/selectors.js",
+        "content/extractor.js",
+        "content/scroller.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+
+  "web_accessible_resources": [
+    {
+      "resources": ["config/keywords.json"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

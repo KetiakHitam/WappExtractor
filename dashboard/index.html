@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WappExtractor Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span class="logo-icon">W</span>
+          <span class="logo-text">WappExtractor</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" data-section="messages">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span>Messages</span>
+          <span class="nav-badge" id="unclassifiedBadge" style="display:none">0</span>
+        </a>
+        <a href="#" class="nav-item" data-section="keywords">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h10M4 17h6"/></svg>
+          <span>Keywords</span>
+        </a>
+        <a href="#" class="nav-item" data-section="settings">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.32 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>Settings</span>
+        </a>
+        <a href="#" class="nav-item" data-section="stats">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+          <span>Stats</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="status-indicator" id="statusIndicator">
+          <span class="status-dot idle"></span>
+          <span class="status-text">Idle</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1 class="page-title" id="pageTitle">Messages</h1>
+        </div>
+        <div class="topbar-right">
+          <div class="stat-pill" id="totalMessages">
+            <span class="stat-label">Total</span>
+            <span class="stat-value">0</span>
+          </div>
+          <div class="stat-pill" id="classifiedCount">
+            <span class="stat-label">Classified</span>
+            <span class="stat-value">0</span>
+          </div>
+          <div class="stat-pill accent" id="matchCount">
+            <span class="stat-label">Matches</span>
+            <span class="stat-value">0</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Messages Section -->
+      <section class="content-section active" id="section-messages">
+        <div class="filters-bar">
+          <div class="search-box">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" id="searchInput" placeholder="Search messages..." class="search-input">
+          </div>
+          <select id="filterGroup" class="filter-select">
+            <option value="">All Groups</option>
+          </select>
+          <select id="filterCategory" class="filter-select">
+            <option value="">All Categories</option>
+            <option value="UMAMUSUME_MERCH">Umamusume Merch</option>
+            <option value="FIGURE_SALE">Figure Sale</option>
+            <option value="STORE_MENTION">Store Mention</option>
+            <option value="FIGURE_ANNOUNCEMENT">Figure Announcement</option>
+            <option value="LOCATION_TIP">Location Tip</option>
+            <option value="NOISE">Noise</option>
+          </select>
+          <select id="filterRelevance" class="filter-select">
+            <option value="">Any Relevance</option>
+            <option value="5">5 - Extremely Relevant</option>
+            <option value="4">4 - Highly Relevant</option>
+            <option value="3">3 - Moderately Relevant</option>
+            <option value="2">2 - Slightly Relevant</option>
+          </select>
+          <button class="btn btn-secondary" id="btnReclassify">Reclassify Pending</button>
+        </div>
+        <div class="table-container">
+          <table class="data-table" id="messagesTable">
+            <thead>
+              <tr>
+                <th>Sender</th>
+                <th>Message</th>
+                <th>Group</th>
+                <th>Category</th>
+                <th>Relevance</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="messagesBody"></tbody>
+          </table>
+          <div class="empty-state" id="emptyState">
+            <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <p>No messages found</p>
+            <span>Start monitoring WhatsApp Web or run a historical scrape</span>
+          </div>
+        </div>
+        <div class="pagination" id="pagination">
+          <button class="btn btn-ghost" id="btnPrev" disabled>Previous</button>
+          <span class="page-info" id="pageInfo">Page 1</span>
+          <button class="btn btn-ghost" id="btnNext">Next</button>
+        </div>
+      </section>
+
+      <!-- Keywords Section -->
+      <section class="content-section" id="section-keywords">
+        <div class="keywords-grid" id="keywordsGrid"></div>
+      </section>
+
+      <!-- Settings Section -->
+      <section class="content-section" id="section-settings">
+        <div class="settings-grid">
+          <div class="settings-card">
+            <h3>Target Groups</h3>
+            <p class="settings-desc">WhatsApp group names to monitor. The extension will match groups containing these names.</p>
+            <div class="input-group">
+              <input type="text" id="inputGroups" placeholder="Group name (one per line)" class="settings-textarea">
+              <small class="input-hint">Separate multiple groups with commas</small>
+            </div>
+          </div>
+          <div class="settings-card">
+            <h3>Discord Webhook</h3>
+            <p class="settings-desc">Webhook URL for receiving alerts in your Discord server.</p>
+            <div class="input-group">
+              <input type="url" id="inputWebhook" placeholder="https://discord.com/api/webhooks/..." class="settings-input">
+              <button class="btn btn-secondary" id="btnTestWebhook">Test Webhook</button>
+            </div>
+          </div>
+          <div class="settings-card">
+            <h3>Gemini API Key</h3>
+            <p class="settings-desc">API key from Google AI Studio for LLM classification.</p>
+            <div class="input-group">
+              <input type="password" id="inputGeminiKey" placeholder="Your Gemini API key" class="settings-input">
+              <button class="btn btn-secondary" id="btnTestGemini">Test Connection</button>
+            </div>
+          </div>
+          <div class="settings-card">
+            <h3>Filter Sensitivity</h3>
+            <p class="settings-desc">Controls how aggressively messages are sent to the LLM for classification.</p>
+            <select id="inputSensitivity" class="filter-select full-width">
+              <option value="aggressive">Aggressive - Send more to LLM (uses more API quota)</option>
+              <option value="balanced" selected>Balanced - Keywords pre-filter, LLM for candidates</option>
+              <option value="conservative">Conservative - Only strong keyword matches go to LLM</option>
+            </select>
+          </div>
+          <div class="settings-card">
+            <h3>Minimum Alert Relevance</h3>
+            <p class="settings-desc">Only send Discord alerts for messages at or above this relevance level.</p>
+            <select id="inputMinRelevance" class="filter-select full-width">
+              <option value="2">2 - Slightly Relevant and above</option>
+              <option value="3" selected>3 - Moderately Relevant and above</option>
+              <option value="4">4 - Highly Relevant and above</option>
+              <option value="5">5 - Only Extremely Relevant</option>
+            </select>
+          </div>
+          <div class="settings-actions">
+            <button class="btn btn-primary" id="btnSaveSettings">Save Settings</button>
+            <button class="btn btn-ghost" id="btnResetSettings">Reset to Defaults</button>
+            <button class="btn btn-secondary" id="btnExportData">Export All Data (JSON)</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Stats Section -->
+      <section class="content-section" id="section-stats">
+        <div class="stats-grid">
+          <div class="stat-card large">
+            <span class="stat-card-value" id="statTotal">0</span>
+            <span class="stat-card-label">Total Messages</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-card-value" id="statClassified">0</span>
+            <span class="stat-card-label">Classified</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-card-value" id="statUnclassified">0</span>
+            <span class="stat-card-label">Pending</span>
+          </div>
+        </div>
+        <div class="stats-breakdown">
+          <h3>By Category</h3>
+          <div class="breakdown-bars" id="categoryBars"></div>
+        </div>
+        <div class="stats-breakdown">
+          <h3>By Group</h3>
+          <div class="breakdown-bars" id="groupBars"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Message Detail Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="messageModal">
+      <div class="modal-header">
+        <h3>Message Details</h3>
+        <button class="btn btn-ghost modal-close" id="btnCloseModal">&times;</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-footer">
+        <select id="modalCategorySelect" class="filter-select">
+          <option value="UMAMUSUME_MERCH">Umamusume Merch</option>
+          <option value="FIGURE_SALE">Figure Sale</option>
+          <option value="STORE_MENTION">Store Mention</option>
+          <option value="FIGURE_ANNOUNCEMENT">Figure Announcement</option>
+          <option value="LOCATION_TIP">Location Tip</option>
+          <option value="NOISE">Noise</option>
+        </select>
+        <button class="btn btn-primary" id="btnOverrideCategory">Override Category</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup">
+    <div class="popup-header">
+      <div class="popup-logo">
+        <span class="logo-square">W</span>
+        <span class="logo-name">WappExtractor</span>
+      </div>
+      <span class="popup-version">v1.0</span>
+    </div>
+
+    <div class="status-section">
+      <div class="status-row">
+        <span class="status-label">Status</span>
+        <span class="status-badge" id="statusBadge">Idle</span>
+      </div>
+      <div class="status-row">
+        <span class="status-label">Current Group</span>
+        <span class="status-value" id="currentGroup">-</span>
+      </div>
+      <div class="status-row">
+        <span class="status-label">Processed</span>
+        <span class="status-value" id="processedCount">0</span>
+      </div>
+    </div>
+
+    <div class="actions-section">
+      <button class="popup-btn primary" id="btnToggleMonitor">Start Monitoring</button>
+      <button class="popup-btn secondary" id="btnStartScrape">Historical Scrape</button>
+      <button class="popup-btn ghost" id="btnOpenDashboard">Open Dashboard</button>
+    </div>
+
+    <div class="scrape-progress" id="scrapeProgress" style="display:none">
+      <div class="progress-header">
+        <span>Scraping...</span>
+        <span id="scrapeCount">0 messages</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <button class="popup-btn ghost small" id="btnStopScrape">Stop Scrape</button>
+    </div>
+
+    <div class="recent-section" id="recentSection">
+      <span class="section-title">Recent Matches</span>
+      <div class="recent-list" id="recentList">
+        <div class="recent-empty">No recent matches</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

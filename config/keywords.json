@@ -1,0 +1,98 @@
+{
+  "umamusume": {
+    "confidence": "high",
+    "terms": [
+      "umamusume", "uma musume", "horse girl", "uma",
+      "special week", "silence suzuka", "tokai teio", "mejiro mcqueen",
+      "rice shower", "gold ship", "daiwa scarlet", "vodka",
+      "oguri cap", "tamamo cross", "narita brian", "symboli rudolf",
+      "air groove", "grass wonder", "el condor pasa", "twin turbo",
+      "haru urara", "kitasan black", "satono diamond", "meisho doto",
+      "copano rickey", "admire vega", "manhattan cafe", "zenno rob roy",
+      "smart falcon", "sakura bakushin o", "super creek", "gold city",
+      "mayano top gun", "sweep tosho", "nice nature", "king halo",
+      "matikanefukukitaru", "winning ticket", "eishin flash",
+      "biwa hayahide", "narita taishin", "mihono bourbon",
+      "ikuno dictus", "seiun sky", "t.m. opera o", "jungle pocket",
+      "agnes tachyon", "curren chan", "fine motion", "nishino flower",
+      "kawakami princess", "nakayama festa", "ines fujin",
+      "wonder acute", "yaeno muteki", "sakura chiyono o",
+      "marvelous sunday", "sirius symboli", "inari one",
+      "taiki shuttle", "north flight", "seeking the pearl"
+    ]
+  },
+  "merch": {
+    "confidence": "medium",
+    "terms": [
+      "figure", "figurine", "scale figure", "nendoroid", "prize figure",
+      "figma", "pop up parade", "ichiban kuji",
+      "plushie", "plush", "stuffed", "nesoberi",
+      "acrylic stand", "acrylic", "keychain", "badge", "pin",
+      "tapestry", "wall scroll", "poster", "clear file",
+      "rubber strap", "can badge", "trading card",
+      "gashapon", "gachapon", "blind box", "shikishi",
+      "patung", "anak patung", "gantung kunci",
+      "WTS", "WTB", "WTT", "LF",
+      "selling", "let go", "letting go", "jual", "nak jual",
+      "pre-order", "preorder", "PO", "restock", "new release",
+      "MIB", "MISB", "opened", "sealed", "brand new", "used",
+      "RM", "harga", "price"
+    ]
+  },
+  "stores": {
+    "confidence": "medium",
+    "terms": [
+      "shopee", "lazada", "carousell", "mudah.my",
+      "amiami", "mandarake", "surugaya", "solaris japan",
+      "goodsmile", "alter", "kotobukiya", "bandai", "banpresto",
+      "animate", "gamers", "toranoana", "melonbooks",
+      "mercari", "yahoo auctions", "buyee", "zenmarket",
+      "hobby search", "hobby link japan", "hlj",
+      "big bad toy store", "cdjapan",
+      "kedai", "shop", "store", "stall", "booth",
+      "seller", "reseller", "distributor", "supplier",
+      "proxy", "forwarding service", "shipping agent",
+      "official store", "authorized dealer"
+    ]
+  },
+  "locations": {
+    "confidence": "medium",
+    "terms": [
+      "sunway pyramid", "mid valley", "pavilion", "one utama",
+      "suria klcc", "berjaya times square", "lot 10",
+      "ioi city mall", "mytown", "nu sentral", "quill city",
+      "paradigm mall", "dpulze", "eko cheras", "aeon",
+      "ss15", "ss2", "pj", "petaling jaya",
+      "bangsar", "bukit bintang", "mont kiara",
+      "subang", "shah alam", "cyberjaya", "putrajaya",
+      "penang", "johor bahru", "jb", "ipoh", "melaka",
+      "anime shop", "hobby shop", "comic shop",
+      "second hand", "2nd hand", "bundle", "preloved",
+      "convention", "event", "expo", "comic fiesta", "cf",
+      "animangaki", "otaku event",
+      "flea market", "bazaar", "pasar karat", "car boot",
+      "akihabara", "nakano broadway", "den den town",
+      "japan", "tokyo", "osaka"
+    ]
+  },
+  "announcements": {
+    "confidence": "medium",
+    "terms": [
+      "announce", "announced", "reveal", "revealed",
+      "upcoming", "coming soon", "release date",
+      "prototype", "painted", "unpainted",
+      "wonder festival", "wonfes", "mega hobby expo",
+      "tamashii nations", "good smile company",
+      "max factory", "phat company", "wave",
+      "preorder open", "po open", "order now"
+    ]
+  },
+  "exclude": {
+    "confidence": "none",
+    "terms": [
+      "good morning", "selamat pagi", "assalamualaikum",
+      "haha", "lmao", "lol", "wkwk", "xD",
+      "ok", "okay", "orait"
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+# OS
+Thumbs.db
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Secrets (API keys stored in Chrome storage, not files, but just in case)
+*.env
+.env.*
+
+# Node (if ever needed)
+node_modules/
