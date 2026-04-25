@@ -120,11 +120,25 @@ export class FilterPipeline {
       // Merge keyword hits into the LLM result.
       llmResult.keywordHits = kwResult.hits.map(h => h.term);
 
-      // Boost relevance if keywords also matched.
-      if (kwResult.categories?.UMAMUSUME_MERCH && llmResult.relevance < 4) {
-        llmResult.relevance = Math.max(llmResult.relevance, 4);
-        // Force the category if the LLM hallucinated it away from a strong keyword match.
-        if (llmResult.category === 'NOISE') llmResult.category = 'UMAMUSUME_MERCH';
+      // Override the LLM if it hallucinated NOISE but we have a strong keyword match
+      if (llmResult.category === 'NOISE') {
+        if (kwResult.categories?.UMAMUSUME_MERCH) {
+          llmResult.category = 'UMAMUSUME_MERCH';
+          llmResult.relevance = Math.max(llmResult.relevance, 4);
+        } else if (kwResult.categories?.FIGURE_SALE) {
+          llmResult.category = 'FIGURE_SALE';
+          llmResult.relevance = Math.max(llmResult.relevance, 3);
+        } else if (kwResult.categories?.STORE_MENTION) {
+          llmResult.category = 'STORE_MENTION';
+          llmResult.relevance = Math.max(llmResult.relevance, 3);
+        } else if (kwResult.categories?.FIGURE_ANNOUNCEMENT) {
+          llmResult.category = 'FIGURE_ANNOUNCEMENT';
+          llmResult.relevance = Math.max(llmResult.relevance, 3);
+        }
+      } else {
+        // If LLM picked a valid category, just ensure the relevance is boosted
+        if (kwResult.categories?.UMAMUSUME_MERCH) llmResult.relevance = Math.max(llmResult.relevance, 4);
+        else if (kwResult.categories?.FIGURE_SALE) llmResult.relevance = Math.max(llmResult.relevance, 3);
       }
 
       return llmResult;
