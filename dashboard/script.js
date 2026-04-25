@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadStats();
   loadSettings();
   loadKeywords();
+  loadSuggestions();
 
   // Listen for real-time status updates from background.
   chrome.runtime.onMessage.addListener((request) => {
@@ -36,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (request.status === 'Idle') {
         loadMessages();
         loadStats();
+        loadSuggestions();
       }
     }
   });
@@ -44,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setInterval(() => {
     if (currentSection === 'messages') loadMessages();
     if (currentSection === 'stats') loadStats();
+    if (currentSection === 'suggestions') loadSuggestions();
   }, 10000);
 });
 
@@ -74,6 +77,7 @@ function switchSection(section) {
   if (section === 'messages') loadMessages();
   if (section === 'stats') loadStats();
   if (section === 'keywords') loadKeywords();
+  if (section === 'suggestions') loadSuggestions();
   if (section === 'settings') loadSettings();
 }
 
@@ -199,6 +203,16 @@ async function updateTopStats() {
     badge.style.display = '';
   } else {
     badge.style.display = 'none';
+  }
+
+  const sugBadge = document.getElementById('suggestionsBadge');
+  const suggestions = await sendMsg({ type: 'GET_SUGGESTIONS' });
+  const pending = (suggestions || []).filter(s => s.status === 'pending');
+  if (pending.length > 0) {
+    sugBadge.textContent = pending.length;
+    sugBadge.style.display = '';
+  } else {
+    sugBadge.style.display = 'none';
   }
 }
 
@@ -406,6 +420,81 @@ async function saveKeywordConfig(config) {
   return new Promise(resolve => {
     chrome.storage.local.set({ keywords: config }, resolve);
   });
+}
+
+// -- Suggestions --
+
+async function loadSuggestions() {
+  const suggestions = await sendMsg({ type: 'GET_SUGGESTIONS' });
+  if (!suggestions) return;
+
+  const pending = suggestions.filter(s => s.status === 'pending');
+  renderSuggestions(pending);
+
+  const badge = document.getElementById('suggestionsBadge');
+  if (pending.length > 0) {
+    badge.textContent = pending.length;
+    badge.style.display = '';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function renderSuggestions(suggestions) {
+  const grid = document.getElementById('suggestionsGrid');
+  const empty = document.getElementById('suggestionsEmpty');
+
+  if (!suggestions || suggestions.length === 0) {
+    grid.innerHTML = '';
+    empty.classList.add('visible');
+    return;
+  }
+
+  empty.classList.remove('visible');
+  grid.innerHTML = suggestions.map(s => `
+    <div class="suggestion-card">
+      <div class="suggestion-header">
+        <span class="suggestion-term">${escapeHtml(s.term)}</span>
+        <span class="suggestion-cat">${escapeHtml(s.category)}</span>
+      </div>
+      <div class="suggestion-confidence">
+        <span>Confidence</span>
+        <div class="confidence-bar">
+          <div class="confidence-fill" style="width: ${s.confidence}%"></div>
+        </div>
+        <span>${s.confidence}%</span>
+      </div>
+      <div class="suggestion-reason">${escapeHtml(s.reason)}</div>
+      <div class="suggestion-context">${escapeHtml(s.context)}</div>
+      <div class="suggestion-actions">
+        <button class="btn btn-primary btn-approve" data-id="${s.id}" data-term="${s.term}" data-cat="${s.category}">Approve</button>
+        <button class="btn btn-ghost btn-dismiss" data-id="${s.id}">Dismiss</button>
+      </div>
+    </div>
+  `).join('');
+
+  grid.querySelectorAll('.btn-approve').forEach(btn => {
+    btn.onclick = () => approveSuggestion(btn.dataset.id, btn.dataset.term, btn.dataset.cat);
+  });
+  grid.querySelectorAll('.btn-dismiss').forEach(btn => {
+    btn.onclick = () => dismissSuggestion(btn.dataset.id);
+  });
+}
+
+async function approveSuggestion(id, term, category) {
+  const result = await sendMsg({ type: 'APPROVE_SUGGESTION', id: parseInt(id), term, category });
+  if (result?.ok) {
+    showToast(`Added "${term}" to ${category}`, 'success');
+    loadSuggestions();
+    loadKeywords();
+  }
+}
+
+async function dismissSuggestion(id) {
+  const result = await sendMsg({ type: 'DISMISS_SUGGESTION', id: parseInt(id) });
+  if (result?.ok) {
+    loadSuggestions();
+  }
 }
 
 // -- Settings --

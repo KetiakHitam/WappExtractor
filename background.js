@@ -103,9 +103,41 @@ async function handleMessage(request, sender) {
     case 'RECLASSIFY_PENDING':
       return await reclassifyPending();
 
+    case 'GET_SUGGESTIONS':
+      return await db.getSuggestions();
+
+    case 'APPROVE_SUGGESTION': {
+      const { id, term, category } = request;
+      // 1. Add to keyword config.
+      const config = await settings.getAll(); // Wait, I should use keywords.js instead?
+      // No, background.js doesn't import loadKeywords/saveKeywords from filters/keywords.js directly.
+      // Wait, let's look at keywords.js.
+      return await approveSuggestion(id, term, category);
+    }
+
+    case 'DISMISS_SUGGESTION':
+      await db.updateSuggestionStatus(request.id, 'dismissed');
+      return { ok: true };
+
     default:
       return { error: `Unknown message type: ${request.type}` };
   }
+}
+
+async function approveSuggestion(id, term, category) {
+  // Use the existing keywords logic
+  const { loadKeywords, saveKeywords } = await import('./filters/keywords.js');
+  const config = await loadKeywords();
+  const catKey = category.toLowerCase();
+
+  if (!config[catKey]) config[catKey] = { confidence: 'medium', terms: [] };
+  if (!config[catKey].terms.includes(term)) {
+    config[catKey].terms.push(term);
+    await saveKeywords(config);
+  }
+
+  await db.updateSuggestionStatus(id, 'approved');
+  return { ok: true };
 }
 
 // Process a single new message through the pipeline.
@@ -128,6 +160,15 @@ async function processMessage(message) {
 
   if (shouldAlert(result) && config.discordWebhookUrl) {
     await sendDiscordAlert(config.discordWebhookUrl, message, result);
+  }
+
+  if (result.suggestedKeywords && result.suggestedKeywords.length > 0) {
+    // Add context to each suggestion for the user to see where it came from.
+    const suggestionsWithContext = result.suggestedKeywords.map(s => ({
+      ...s,
+      context: message.text
+    }));
+    await db.addSuggestions(suggestionsWithContext);
   }
 
   return { ok: true, id: stored.id, classification: result };
@@ -161,6 +202,7 @@ let classificationRunning = false;
 async function queueBatchClassification() {
   if (classificationRunning) return;
   classificationRunning = true;
+  broadcastStatus('Classifying...');
 
   try {
     const config = await settings.getAll();
@@ -192,7 +234,12 @@ async function queueBatchClassification() {
     console.error('[WappExtractor] Batch classification error:', err);
   } finally {
     classificationRunning = false;
+    broadcastStatus('Idle');
   }
+}
+
+function broadcastStatus(status) {
+  broadcastToPopup({ type: 'STATUS_UPDATE', status });
 }
 
 function shouldAlert(classification) {

@@ -29,7 +29,16 @@ Group: "${message.groupName}"
 ${message.links?.length > 0 ? `Links: ${message.links.join(', ')}` : ''}
 
 Respond ONLY with valid JSON:
-{"category":"...","relevance":N,"summary":"brief summary","reasoning":"why this classification"}`;
+{
+  "category": "...",
+  "relevance": N,
+  "summary": "brief summary",
+  "reasoning": "why this classification",
+  "suggestedKeywords": [
+    {"term": "shorthand or term found", "category": "matching category", "confidence": 1-100, "reason": "why suggest this"}
+  ]
+}
+If no relevant keywords are found, return an empty array for suggestedKeywords. Categorize suggestions using the categories listed above (UMAMUSUME_MERCH, STORE_MENTION, FIGURE_SALE, FIGURE_ANNOUNCEMENT, LOCATION_TIP).`;
 }
 
 function canMakeRequest() {
@@ -113,11 +122,12 @@ function parseClassification(rawText) {
       category: validCategories.includes(parsed.category) ? parsed.category : 'NOISE',
       relevance: typeof parsed.relevance === 'number'
         ? Math.min(5, Math.max(1, Math.round(parsed.relevance))) : 1,
-      summary: parsed.summary || '',
+      summary: parsed.summary || 'No summary.',
       reasoning: parsed.reasoning || '',
-      source: 'gemini',
+      suggestedKeywords: parsed.suggestedKeywords || [],
+      source: 'gemini'
     };
-  } catch {
-    return fallback;
+  } catch (err) {
+    return { ...fallback, error: err.message };
   }
 }

@@ -31,6 +31,16 @@ export class MessageDB {
           store.createIndex('classified', 'classified', { unique: false });
           store.createIndex('sender', 'sender', { unique: false });
         }
+
+        if (!db.objectStoreNames.contains('suggestions')) {
+          const store = db.createObjectStore('suggestions', {
+            keyPath: 'id',
+            autoIncrement: true,
+          });
+          store.createIndex('status', 'status', { unique: false });
+          store.createIndex('createdAt', 'createdAt', { unique: false });
+          store.createIndex('term', 'term', { unique: true });
+        }
       };
 
       request.onsuccess = event => {
@@ -327,6 +337,63 @@ export class MessageDB {
 
       req.onsuccess = () => resolve(req.result);
       req.onerror = () => reject(new Error(`Export error: ${req.error}`));
+    });
+  }
+
+  // --- Suggestions ---
+
+  async addSuggestions(suggestions) {
+    await this.init();
+    if (!suggestions || suggestions.length === 0) return;
+
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction('suggestions', 'readwrite');
+      const store = tx.objectStore('suggestions');
+
+      suggestions.forEach(s => {
+        store.put({
+          term: s.term.toLowerCase(),
+          category: s.category,
+          confidence: s.confidence || 50,
+          reason: s.reason || '',
+          context: s.context || '',
+          status: 'pending',
+          createdAt: Date.now()
+        });
+      });
+
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(new Error('Failed to add suggestions'));
+    });
+  }
+
+  async getSuggestions() {
+    await this.init();
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction('suggestions', 'readonly');
+      const store = tx.objectStore('suggestions');
+      const req = store.getAll();
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(new Error('Failed to get suggestions'));
+    });
+  }
+
+  async updateSuggestionStatus(id, status) {
+    await this.init();
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction('suggestions', 'readwrite');
+      const store = tx.objectStore('suggestions');
+      const getReq = store.get(id);
+
+      getReq.onsuccess = () => {
+        const record = getReq.result;
+        if (!record) return resolve();
+        record.status = status;
+        store.put(record);
+      };
+
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(new Error('Failed to update suggestion'));
     });
   }
 }
