@@ -1,6 +1,14 @@
 // Dashboard logic: navigation, message display, keyword management,
 // settings, stats, and modal interactions.
 
+window.dumpConfig = async function() {
+  const config = await getKeywordConfig();
+  console.log('====== KEYWORD CONFIG DUMP ======');
+  console.log(JSON.stringify(config, null, 2));
+  console.log('=================================');
+  alert('Dumped to console. Check DevTools (F12).');
+};
+
 // -- State --
 let currentSection = 'messages';
 let currentPage = 0;

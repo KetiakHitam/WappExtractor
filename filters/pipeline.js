@@ -142,7 +142,8 @@ export class FilterPipeline {
       }
 
       // DEBUG: Append exactly which categories matched so we can see what's failing
-      llmResult.summary = (llmResult.summary || '') + ` | DEBUG HITS: ${Object.keys(kwResult.categories).join(', ')}`;
+      const termsStr = kwResult.categories?.umamusume ? 'MATCHED' : (this.keywordConfig?.umamusume?.terms?.join(', ') || 'NOT FOUND');
+      llmResult.summary = (llmResult.summary || '') + ` | DEBUG HITS: ${Object.keys(kwResult.categories).join(', ')} | UMA_TERMS: ${termsStr}`;
 
       return llmResult;
     } catch (err) {
