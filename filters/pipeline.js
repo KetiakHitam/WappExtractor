@@ -141,6 +141,9 @@ export class FilterPipeline {
         else if (kwResult.categories?.merch || kwResult.categories?.stores) llmResult.relevance = Math.max(llmResult.relevance, 3);
       }
 
+      // DEBUG: Append exactly which categories matched so we can see what's failing
+      llmResult.summary = (llmResult.summary || '') + ` | DEBUG HITS: ${Object.keys(kwResult.categories).join(', ')}`;
+
       return llmResult;
     } catch (err) {
       console.error('[WappExtractor] LLM classification failed:', err);
