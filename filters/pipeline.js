@@ -31,22 +31,22 @@ export class FilterPipeline {
     let category = 'NOISE';
     let relevance = 1;
 
-    if (kwResult.categories?.umamusume) {
+    if (kwResult.categories?.UMAMUSUME_MERCH) {
       category = 'UMAMUSUME_MERCH';
-      relevance = Math.min(5, 3 + kwResult.categories.umamusume.hits.length);
+      relevance = Math.min(5, 3 + kwResult.categories.UMAMUSUME_MERCH.hits.length);
     } else if (urlResult.storeLinks.length > 0 || urlResult.marketplaceLinks.length > 0) {
       category = 'STORE_MENTION';
       relevance = 3;
     } else if (urlResult.locationLinks.length > 0) {
       category = 'LOCATION_TIP';
       relevance = 3;
-    } else if (kwResult.categories?.merch && kwResult.categories?.stores) {
+    } else if (kwResult.categories?.UMAMUSUME_MERCH || kwResult.categories?.FIGURE_SALE) {
       category = 'FIGURE_SALE';
       relevance = 2;
-    } else if (kwResult.categories?.locations) {
+    } else if (kwResult.categories?.LOCATION_TIP || kwResult.categories?.STORE_MENTION) {
       category = 'LOCATION_TIP';
       relevance = 2;
-    } else if (kwResult.categories?.announcements) {
+    } else if (kwResult.categories?.FIGURE_ANNOUNCEMENT) {
       category = 'FIGURE_ANNOUNCEMENT';
       relevance = 2;
     } else if (totalScore >= 2) {
@@ -121,8 +121,10 @@ export class FilterPipeline {
       llmResult.keywordHits = kwResult.hits.map(h => h.term);
 
       // Boost relevance if keywords also matched.
-      if (kwResult.categories?.umamusume && llmResult.relevance < 4) {
+      if (kwResult.categories?.UMAMUSUME_MERCH && llmResult.relevance < 4) {
         llmResult.relevance = Math.max(llmResult.relevance, 4);
+        // Force the category if the LLM hallucinated it away from a strong keyword match.
+        if (llmResult.category === 'NOISE') llmResult.category = 'UMAMUSUME_MERCH';
       }
 
       return llmResult;
